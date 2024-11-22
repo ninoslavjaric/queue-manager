@@ -36,7 +36,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Nino\\CustomQueueLaravel\\Providers\\CustomQueueServiceProvider"
+                "Nino\\CustomQueueLaravel\\Providers\\CustomQueueProvider"
             ]
         }
     }
