@@ -39,5 +39,11 @@
                 "Nino\\CustomQueueLaravel\\Providers\\CustomQueueProvider"
             ]
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "pwd",
+            "php artisan migrate --path=database/migrations/2024_11_20_003045_create_custom_queue_table.php"
+        ]
     }
 }
