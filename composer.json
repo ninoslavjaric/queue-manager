@@ -17,11 +17,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/console": "^11.31",
-        "illuminate/database": "^11.31",
-        "illuminate/http": "^11.31",
-        "illuminate/support": "^11.31",
-        "symfony/console": "^7.0"
+        "laravel/framework": "^11.31"
     },
     "require-dev": {
         "mockery/mockery": "^1.6",
