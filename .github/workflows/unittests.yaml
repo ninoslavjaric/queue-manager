@@ -20,4 +20,6 @@ jobs:
       - name: Unit tests run
         shell: bash
         run: |
+          pwd
+          ls -l
           vendor/bin/phpunit
