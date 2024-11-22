@@ -1,0 +1,47 @@
+{
+    "name": "ninoslavjaric/queue-manager",
+    "description": "A Laravel-based queue management system with background job support.",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "queue-manager",
+        "background-jobs",
+        "task-queue",
+        "laravel-package"
+    ],
+    "authors": [
+        {
+            "name": "Ninoslav Jaric",
+            "email": "jaricninoslav@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^11.31",
+        "illuminate/database": "^11.31",
+        "illuminate/http": "^11.31",
+        "illuminate/support": "^11.31",
+        "symfony/console": "^7.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^11.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nino\\CustomQueueLaravel\\": "src/app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nino\\CustomQueueLaravelTests\\": "src/app/tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nino\\CustomQueueLaravel\\Providers\\CustomQueueServiceProvider"
+            ]
+        }
+    }
+}
