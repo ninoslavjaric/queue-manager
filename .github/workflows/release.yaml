@@ -7,11 +7,13 @@ on:
 #        description: "something like v1.1.1"
   push:
     branches:
-      - master
+      - main
 
 name: Create Release
+
 permissions:
   contents: write
+
 jobs:
   build:
     name: Create Release
