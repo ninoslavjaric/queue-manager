@@ -118,6 +118,8 @@ abstract class QueueManager
             $result = $object->$method(...$params);
 
             return is_null($result) || $result;
+        } catch (\ReflectionException $e) {
+            $this->errorLogger->alert($this->formatMessage($logContext, $e->getMessage()));
         } catch (\Exception $e) {
 
             if ($retries > 0) {
@@ -138,6 +140,7 @@ abstract class QueueManager
 
             $this->errorLogger->alert($this->formatMessage($logContext, $e->getMessage()));
         }
+
         return false;
     }
 
