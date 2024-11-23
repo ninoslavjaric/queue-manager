@@ -5,6 +5,12 @@ on:
 #        type: string
 #        required: true
 #        description: "something like v1.1.1"
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - synchronize
   push:
     branches:
       - main
@@ -16,16 +22,39 @@ permissions:
 
 jobs:
   build:
+    if: github.event_name == 'push' || github.event.pull_request.base.ref == 'main'
     name: Create Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set bump from labels
+        id: set_bump
+        shell: bash
+        run: |
+          LABELS='${{ toJson(github.event.pull_request.labels) }}'
+          echo "Checking labels: $LABELS"
+
+          # Find the first label that starts with 'semver-' and get the rest of the name
+          default_bump=$(echo "$LABELS" | jq -r '.[] | select(.name | startswith("semver-")) | .name | ltrimstr("semver-")' | head -n 1)
+
+          if [ -z "$default_bump" ]; then
+            echo "No 'semver-' label found, using default bump as 'patch'."
+            default_bump="patch"  # Default to "patch" if no label is found
+          fi
+
+          echo "Found default_bump: $default_bump"
+
+          # Set default_bump as an output for later use
+          echo "::set-output name=default_bump::$default_bump"
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
+          dry_run: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          default_bump: ${{ steps.set_bump.outputs.default_bump || 'patch' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a release
+        if: github.event_name == 'push'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}

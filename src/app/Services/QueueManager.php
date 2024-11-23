@@ -53,7 +53,7 @@ abstract class QueueManager
     abstract public function updatePid(string $uuid, int $pid): bool;
     abstract protected function push(TaskI $task): void;
 
-    protected function setValidator(QueueManagerPayloadValidator $validator): void
+    public function setValidator(QueueManagerPayloadValidator $validator): void
     {
         $this->validator = $validator;
     }
@@ -78,7 +78,10 @@ abstract class QueueManager
      * @return array|Collection [TaskI]
      */
     abstract public function pop(int $limit): array|Collection;
-
+    public function getReflectionClassFor(string $className): \ReflectionClass
+    {
+        return new \ReflectionClass($className);
+    }
     /**
      * Run a background job.
      *
@@ -99,7 +102,7 @@ abstract class QueueManager
     ): bool
     {
         try {
-            $classMeta = new \ReflectionClass($class);
+            $classMeta = $this->getReflectionClassFor($class);
 
             $diParams = collect($classMeta->getConstructor()?->getParameters())->map(
                 fn(\ReflectionParameter $parameter) => app($parameter->getType()->getName())
