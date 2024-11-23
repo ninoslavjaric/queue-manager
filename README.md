@@ -1,6 +1,6 @@
 [![Unit test execution](https://github.com/ninoslavjaric/queue-manager/actions/workflows/unittests.yaml/badge.svg)](https://github.com/ninoslavjaric/queue-manager/actions/workflows/unittests.yaml)
 [![Create Release](https://github.com/ninoslavjaric/queue-manager/actions/workflows/release.yaml/badge.svg)](https://github.com/ninoslavjaric/queue-manager/actions/workflows/release.yaml)
-
+[![codecov](https://codecov.io/github/ninoslavjaric/queue-manager/graph/badge.svg?token=H8D6C4GTY5)](https://codecov.io/github/ninoslavjaric/queue-manager)
 
 # Custom Queue Manager for Laravel
 
