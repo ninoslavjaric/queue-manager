@@ -11,6 +11,7 @@ on:
       - labeled
       - unlabeled
       - synchronize
+      - closed
   push:
     branches:
       - main
@@ -22,7 +23,7 @@ permissions:
 
 jobs:
   build:
-    if: github.event_name == 'push' || github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.base.ref == 'main'
     name: Create Release
     runs-on: ubuntu-latest
     steps:
@@ -50,11 +51,11 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          dry_run: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          dry_run: ${{ github.event.pull_request.merged && 'false' || 'true' }}
           default_bump: ${{ steps.set_bump.outputs.default_bump || 'patch' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a release
-        if: github.event_name == 'push'
+        if: github.event.pull_request.merged == true
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
