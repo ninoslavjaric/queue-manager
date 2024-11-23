@@ -1,10 +1,4 @@
 on:
-#  workflow_dispatch:
-#    inputs:
-#      tag:
-#        type: string
-#        required: true
-#        description: "something like v1.1.1"
   pull_request:
     types:
       - opened
@@ -12,9 +6,6 @@ on:
       - unlabeled
       - synchronize
       - closed
-  push:
-    branches:
-      - main
 
 name: Create Release
 
