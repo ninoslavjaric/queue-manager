@@ -20,7 +20,11 @@ jobs:
       - name: Unit tests run
         shell: bash
         run: |
-          vendor/bin/phpunit --log-junit junit.xml
+          vendor/bin/phpunit --log-junit junit.xml --coverage-clover coverage.xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
