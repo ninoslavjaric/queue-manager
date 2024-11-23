@@ -5,6 +5,11 @@ on:
 #        type: string
 #        required: true
 #        description: "something like v1.1.1"
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
   push:
     branches:
       - main
@@ -16,6 +21,7 @@ permissions:
 
 jobs:
   build:
+    if: github.event_name == 'push' || github.event.pull_request.base.ref == 'main'
     name: Create Release
     runs-on: ubuntu-latest
     steps:
@@ -24,8 +30,10 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
+          dry_run: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a release
+        if: github.event_name == 'push'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
