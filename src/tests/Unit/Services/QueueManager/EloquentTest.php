@@ -13,6 +13,7 @@ use Nino\CustomQueueLaravel\Services\QueueManagerPayloadException;
 use Nino\CustomQueueLaravel\Services\QueueManagerPayloadValidator;
 use PHPUnit\Framework\TestCase;
 use Mockery;
+use function PHPUnit\Framework\exactly;
 
 class EloquentTest extends TestCase
 {
@@ -36,6 +37,57 @@ class EloquentTest extends TestCase
         );
 
         $this->queueManager->setModel($this->createMock(CustomQueueTask::class));
+    }
+
+
+    public function testItRunBackgroundJobWithValidParamsExpectingFalseReflectionClassThrowsExceptionResult()
+    {
+        $reflectionClass = $this->createMock(\ReflectionClass::class);
+
+        $partialMocks = $this->createPartialMock(Eloquent::class, ['formatMessage', 'getReflectionClassFor']);
+
+        $partialMocks->method('getReflectionClassFor')->willReturn($reflectionClass);
+        $reflectionClass->method('getConstructor')->willThrowException(new \ReflectionException('some wrong'));
+
+        $partialMocks->setErrorLogger($this->errorLogger);
+        $partialMocks->setDefaultLogger($this->defaultLogger);
+        $partialMocks->setValidator($this->validator);
+
+        $partialMocks->expects($this->once())->method('formatMessage')->willReturn('djes');
+        $this->errorLogger->expects($this->once())->method('alert')->with('djes');
+        $this->errorLogger->expects($this->never())->method('warning')->with('djes');
+        $this->defaultLogger->expects($this->never())->method('info')->with('djes');
+
+        $result = $partialMocks->runBackgroundJob('DynamicClass1', 'dynamicMethod', ['test'], retries: 2);
+
+        $this->assertFalse($result);
+    }
+
+    public function testItRunBackgroundJobWithValidParamsExpectingFalseQueableClassThrowsExceptionResult()
+    {
+        $dynamicClass = <<<PHP
+class DynamicClass1 {
+    public function dynamicMethod(string \$message): void
+    {
+        throw new \Exception('hellog');
+    }
+}
+PHP;
+        eval($dynamicClass);
+
+        $partialMocks = $this->createPartialMock(Eloquent::class, ['formatMessage']);
+        $partialMocks->setErrorLogger($this->errorLogger);
+        $partialMocks->setDefaultLogger($this->defaultLogger);
+        $partialMocks->setValidator($this->validator);
+
+        $partialMocks->expects($this->exactly(5))->method('formatMessage')->willReturn('djes');
+        $this->errorLogger->expects($this->once())->method('alert')->with('djes');
+        $this->errorLogger->expects($this->exactly(2))->method('warning')->with('djes');
+        $this->defaultLogger->expects($this->exactly(2))->method('info')->with('djes');
+
+        $result = $partialMocks->runBackgroundJob('DynamicClass1', 'dynamicMethod', ['test'], retries: 2);
+
+        $this->assertFalse($result);
     }
 
     public function testItRunBackgroundJobWithValidParamsExpectingTrueResult()
